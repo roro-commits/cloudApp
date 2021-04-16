@@ -1,12 +1,8 @@
 import * as React from 'react';
 import { Text, View, StyleSheet, Animated } from 'react-native';
-import Constants from 'expo-constants';
 import { CountdownCircleTimer } from 'react-native-countdown-circle-timer'
 import StartButton from './startButton'
-import DilaogMessage from './Dialog'
 import { ToggleButton,DefaultTheme, Provider as PaperProvider } from 'react-native-paper';
-import {Picker} from '@react-native-picker/picker';
-import {timeLineData} from './mainFrame'
 import moment from 'moment';
 import axios from 'axios'
 
@@ -35,6 +31,7 @@ const children = ({ remainingTime }) => {
   };
 
 
+  // use to set the timer and  the subject by using group toggle 
 const SetTimer = () => {
     const [value, setValue] = React.useState(10);
     const [selectedLanguage, setSelectedLanguage] = React.useState('cloudOS');
@@ -43,19 +40,14 @@ const SetTimer = () => {
       <React.Fragment>
         <View  style={styles.view} >
          <Text style ={styles.text}> Pick Time </Text>
-         <Text style ={styles.text2}> 10sec | 1min| 5min| 30min </Text>
-         {/* <React.Fragment>  
-         <Text style ={styles.text2}> 10sec </Text>
-         <Text style ={styles.text2}>  1min </Text>
-         <Text style ={styles.text2}>  5min </Text>
-         <Text style ={styles.text2}>  30min </Text>
-         </React.Fragment> */}
-
+         <Text style ={styles.text2}> 10sec | 1min| 5min| 50min </Text>
+         
+            {/* //on onValueChange triggers a fucntion to set global time and subject value  */}
         <ToggleButton.Row style={styles.color} onValueChange={value => setValue(value)} value={value}>
             <ToggleButton size ={40} icon="timer-10" onPress={() => {values = 10}} value={10} />
             <ToggleButton size ={40} icon="clock-time-six" onPress={() => {values = 60}} value="1 min" />
             <ToggleButton size ={40} icon="timelapse" onPress={() => {values = 300}} value="5 min" />
-            <ToggleButton size ={40} icon="clock-time-twelve-outline" onPress={() => {values = 3000}} value="30 min" />
+            <ToggleButton size ={40} icon="clock-time-twelve-outline" onPress={() => {values = 3000}} value="50 min" />
       </ToggleButton.Row>
 
       <Text style ={styles.text}> Select Subject </Text>
@@ -100,12 +92,14 @@ class TImer extends React.Component {
         this.setState({ done:true });
     }
 
+
+    // key is used to trigger the timer restart
     this.onReset =() =>{
         console.log(this.state.done);
         this.setState({ key: this.state.key+1 });
         this.setState({time: values})
 
-        console.log(timeLineData.length)
+        // console.log(timeLineData.length)
 
     }
 
@@ -116,6 +110,8 @@ class TImer extends React.Component {
       
     }
 
+    // function for sending data to the data base 
+
     this.submit = (event) => {
       // event.preventDefault();
         let data = job
@@ -123,16 +119,12 @@ class TImer extends React.Component {
         let description =''
         let dotColor = ''
 
-
+        //using  the momemt.js libarary to set the time data 
         var date = moment()
         .utcOffset('+1')
         .format('hh:mm a');
 
-        // 'cloudOS Computing'}} value='cloudOS' />
-        //     > {job = ' C++ Programing'}} value="C++" />
-        //     <=>  { job = 'Mathematics'}} value="Math" />
-        //      'Recreation'}} value="plus" 
-
+        //creating Data Structure for tijme line before sending it 
         if (job === 'cloudOS Computing'){
           description =' Studying Cloud Computing .....'
           dotColor = 'green'
@@ -181,6 +173,7 @@ class TImer extends React.Component {
             <React.Fragment>
                 <View style={styles.container}>
                     <CountdownCircleTimer
+                    //key triggers restart when it changes 
                     key={this.state.key}
                     isPlaying={this.state.start.valueOf()}
                     duration={this.state.time}
@@ -205,6 +198,7 @@ class TImer extends React.Component {
 
                     <View style={styles.startButton}>
                     <React.Fragment>
+                      {/* tenary starts timeer or Restart Timer         and changes button text to start ot Restart */}
                         <StartButton   props={this.state.done === false ? this.onselectstart : this.onReset} text={this.state.done === false ? 'Start Timer !!!': "Restart!!!"}  />
                     </React.Fragment>
                 </View>
